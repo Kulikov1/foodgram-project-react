@@ -8,7 +8,7 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=20)
 
     class Meta:
-        verbose_name = 'Tag'
+        verbose_name = 'Тег'
 
     def __str__(self):
         return self.name
@@ -19,7 +19,7 @@ class Ingredient(models.Model):
     measurement_unit = models.CharField(max_length=200)
 
     class Meta:
-        verbose_name = 'Ingredient'
+        verbose_name = 'Ингредиент'
 
     def __str__(self):
         return self.name
@@ -33,19 +33,19 @@ class Recipes(models.Model):
     )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='recipes',
-        verbose_name='author')
+        verbose_name='автор')
     name = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
     text = models.TextField()
     tags = models.ManyToManyField(
         Tag,
         related_name='Recipes',
-        verbose_name='Tegs'
+        verbose_name='Теги'
     )
     cooking_time = models.PositiveBigIntegerField()
 
     class Meta:
-        verbose_name = 'Recipes'
+        verbose_name = 'Рецепт'
 
     def __str__(self):
         return self.name
@@ -54,12 +54,12 @@ class Recipes(models.Model):
 class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
-        related_name='Amounts',
+        related_name='Количество',
         on_delete=models.CASCADE
     )
     recipes = models.ForeignKey(
         Recipes,
-        related_name='Amounts',
+        related_name='Количество',
         on_delete=models.CASCADE
     )
     amount = models.PositiveBigIntegerField()

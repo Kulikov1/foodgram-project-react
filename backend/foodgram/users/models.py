@@ -3,34 +3,24 @@ from django.db import models
 
 
 class User(AbstractUser):
-    USER = 'user'
-    MODERATOR = 'moderator'
-    ADMIN = 'admin'
-    ROLE_CHOICES = [
-        (USER, 'user'),
-        (MODERATOR, 'moderator'),
-        (ADMIN, 'admin'),
-    ]
-    role = models.CharField(
-        max_length=20,
-        verbose_name='Роль',
-        help_text='Роль пользователя',
-        choices=ROLE_CHOICES,
-        default=USER,
+    username = models.CharField(
+        'Имя пользователя',
+        max_length=150,
+        unique=True,
     )
-    bio = models.TextField(
-        verbose_name='Биография',
-        help_text='Расскажите о себе',
-        blank=True,
+    email = models.EmailField(
+        'Электронная почта',
+        max_length=254,
+        unique=True,
     )
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN or self.is_superuser
-
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR
+    first_name = models.CharField(
+        'Имя',
+        max_length=150,
+    )
+    last_name = models.CharField(
+        'Фамилия',
+        max_length=150,
+    )
 
     def __str__(self) -> str:
         return self.username
