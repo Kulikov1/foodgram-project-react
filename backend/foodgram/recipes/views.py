@@ -1,10 +1,11 @@
 from rest_framework import viewsets, serializers
 from rest_framework.pagination import PageNumberPagination
-from recipes.models import Ingredient, Recipes, IngredientAmount, Tag
+from .models import Ingredient, Recipe, IngredientAmount, Tag
 
 from .serializers import (
     IngredientSerializer,
-    RecipesSerializer,
+    RecipeReadSerializer,
+    RecipeCreateSerializer,
     TagSerializer,
     IngredientAmountSerializer
 )
@@ -32,11 +33,13 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-class RecipesViewSet(viewsets.ModelViewSet):
-    ingredients = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=IngredientAmount.objects.all(),
-        many=True)
-    queryset = Recipes.objects.all()
-    serializer_class = RecipesSerializer
-    pagination_class = PageNumberPagination
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Отображение и создание рецептов"""
+
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeCreateSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeReadSerializer
+        return RecipeCreateSerializer

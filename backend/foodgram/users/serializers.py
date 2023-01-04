@@ -1,50 +1,50 @@
-from .models import User
-from rest_framework import serializers, validators
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework.serializers import SerializerMethodField
+from django.contrib.auth import get_user_model
+
+from recipes.models import Follow
+
+User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        validators=[validators.UniqueValidator(queryset=User.objects.all())],
-        required=True,
-    )
+class UserRegistrationSerializer(UserCreateSerializer):
+    """Сериализатор регистрации юзера в соответствии с ТЗ"""
 
-    class Meta:
-        model = User
+    class Meta(UserCreateSerializer.Meta):
         fields = (
-            'username',
             'email',
+            'id',
+            'username',
             'first_name',
             'last_name',
-            'bio',
-            'role',
+            'password',
+        )
+        read_only_fields = ('id',)
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+
+class CustomUserSerializer(UserSerializer):
+    """Сериализатор отображения юзера в соответствии с ТЗ"""
+
+    is_subscribed = SerializerMethodField()
+
+    class Meta(UserCreateSerializer.Meta):
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
         )
 
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request', None)
+        if request:
+            current_user = request.user
 
-class UserEditSerializer(UserSerializer):
-    class Meta(UserSerializer.Meta):
-        read_only_fields = ('role',)
-
-
-class UserCreateSerializer(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'username',)
-
-    def validate(self, data):
-        if data['username'] == data['email']:
-            raise serializers.ValidationError(
-                'Поля "username" и "email" должны быть различны'
-            )
-        return data
-
-    def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError(
-                '"me" не может быть именем пользователя'
-            )
-        return value
-
-
-class TokenSerializer(serializers.Serializer):
-    username = serializers.SlugField(required=True)
-    confirmation_code = serializers.SlugField(required=True)
+        return Follow.objects.filter(
+            user=current_user.id,
+            author=obj.id).exists()

@@ -1,5 +1,11 @@
 from django.db import models
-from users.models import User
+from django.core.validators import MinValueValidator
+from django.db.models import UniqueConstraint
+from django.forms import ValidationError
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Tag(models.Model):
@@ -25,21 +31,21 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Recipes(models.Model):
+class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientAmount',
-        related_name='Recipes'
+        related_name='Recipe'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='recipes',
+        User, on_delete=models.CASCADE, related_name='recipe',
         verbose_name='автор')
     name = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
     text = models.TextField()
     tags = models.ManyToManyField(
         Tag,
-        related_name='Recipes',
+        related_name='Recipe',
         verbose_name='Теги'
     )
     cooking_time = models.PositiveBigIntegerField()
@@ -58,8 +64,43 @@ class IngredientAmount(models.Model):
         on_delete=models.CASCADE
     )
     recipes = models.ForeignKey(
-        Recipes,
+        Recipe,
         related_name='Количество',
         on_delete=models.CASCADE
     )
-    amount = models.PositiveBigIntegerField()
+    amount = models.FloatField(
+        validators=[MinValueValidator(0.1, message='Должно быть > 0'), ]
+    )
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='author',
+        verbose_name='Автор'
+    )
+    
+    class Meta:
+        ordering = ('-id',)
+        constraints = [
+            UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_follow'
+            )
+        ]
+    
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError(
+                'Подписка на самого себя запрещена!'
+            )
+
+    def __str__(self):
+        return (f'Подписка {self.user.get_username}',
+                f'на: {self.author.get_username}')
