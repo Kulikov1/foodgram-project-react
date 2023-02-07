@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'users',
     'recipes',
     'api',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Authentication settings
+
+AUTH_USER_MODEL = 'users.User'
 
 
 # Password validation
@@ -147,15 +152,17 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'users.serializers.UserRegistrationSerializer',
-        'user': 'users.serializers.CustomUserSerializer',
-        'current_user': 'users.serializers.CustomUserSerializer',
-
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer'
     },
     'PERMISSIONS': {
-        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-    }
+        'set_password': ['djoser.permissions.CurrentUserOrAdmin'],
+        'set_username': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user_delete': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user': ['rest_framework.permissions.IsAuthenticated', ],
+        'user_list': ['rest_framework.permissions.AllowAny'],
+    },
+    'HIDE_USERS': False,
+    'SEND_ACTIVATION_EMAIL': False,
 }
