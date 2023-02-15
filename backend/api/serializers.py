@@ -95,7 +95,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     ingredients = ReadOnlyIngredientAmountSerializer(
         many=True,
         source='ingredientamount',
-        )
+    )
     is_favorited = serializers.SerializerMethodField(
         method_name='check_is_favorited'
     )
@@ -172,7 +172,8 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
 
                 if len(tags_list) == 0:
                     raise serializers.ValidationError(
-                            'Список тегов не должен быть пустым')
+                        'Список тегов не должен быть пустым'
+                    )
 
                 all_tags = Tag.objects.all().values_list('id', flat=True)
                 if not set(tags_list).issubset(all_tags):
@@ -198,7 +199,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
 
                 if len(ingredients_list) == 0:
                     raise serializers.ValidationError(
-                            'Список ингредиентов не должен быть пустым')
+                        'Список ингредиентов не должен быть пустым')
         return data
 
     def create_ingredients(self, recipe, ingredients):
@@ -231,9 +232,12 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
-        return ReadOnlyRecipeSerializer(instance, context={
-                 'request': self.context.get('request')
-            }).data
+        return ReadOnlyRecipeSerializer(
+            instance,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data
 
 
 class RecipePartInfoSerializer(serializers.ModelSerializer):
