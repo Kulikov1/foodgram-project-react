@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
 
 from .models import (
     Favorite,
@@ -14,7 +13,6 @@ from .models import (
 class IngredientAmountInline(admin.TabularInline):
     model = IngredientAmount
     extra = 1
-
 
 
 @admin.register(Ingredient)

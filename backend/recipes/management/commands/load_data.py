@@ -3,7 +3,7 @@ import csv
 from django.conf import settings
 from django.core.management import BaseCommand
 
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
@@ -20,3 +20,12 @@ class Command(BaseCommand):
             Ingredient.objects.bulk_create(
                 Ingredient(**data) for data in reader)
         self.stdout.write(self.style.SUCCESS('Все ингридиенты загружены!'))
+        with open(
+            f'{data_path}/data/tags.csv',
+            'r',
+            encoding='utf-8'
+        ) as file:
+            reader = csv.DictReader(file)
+            Tag.objects.bulk_create(
+                Tag(**data) for data in reader)
+        self.stdout.write(self.style.SUCCESS('Все теги загружены!'))

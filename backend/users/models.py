@@ -4,6 +4,7 @@ from django.forms import ValidationError
 
 
 class User(AbstractUser):
+    """Модель пользователя"""
     email = models.EmailField(
         unique=True,
         blank=False,
@@ -21,6 +22,7 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
+    """Модель Подписки"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -33,11 +35,11 @@ class Follow(models.Model):
         related_name='author',
         verbose_name='Автор'
     )
-    
+
     class Meta:
         ordering = ('-id',)
         unique_together = ('user', 'author')
-    
+
     def clean(self):
         if self.user == self.author:
             raise ValidationError(

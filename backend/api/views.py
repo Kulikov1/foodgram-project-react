@@ -3,30 +3,40 @@ import csv
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from django.db.models.expressions import Exists, OuterRef, Value
 from django.http import HttpResponse
-from rest_framework import status, viewsets, permissions, views, mixins
+from rest_framework import status, viewsets, permissions, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated,)
 from rest_framework.decorators import action
 
-from .serializers import (IngredientSerializer, CreateOrUpdateRecipeSerializer,
-                             ReadOnlyRecipeSerializer, TagSerializer,
-                             FollowSerializer, RecipePartInfoSerializer,
-                             FollowCreateSerializer)
-from recipes.models import Ingredient, Recipe, Tag, ShoppingCart, Favorite, IngredientAmount
+from .serializers import (
+    IngredientSerializer,
+    CreateOrUpdateRecipeSerializer,
+    ReadOnlyRecipeSerializer,
+    TagSerializer,
+    FollowSerializer,
+    RecipePartInfoSerializer,
+    FollowCreateSerializer
+)
+from recipes.models import (
+    Ingredient,
+    Recipe,
+    Tag,
+    ShoppingCart,
+    Favorite,
+    IngredientAmount
+)
 from users.models import Follow
 from .pagination import CustomPagination
 from .filter import IngredientFilter, TagFilter
-from .permissions import AuthorIsRequestUserPermission
 
 User = get_user_model()
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    """Класс работы с ингредиентами."""
+    """Вью для работы с ингредиентами"""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny, ]
@@ -38,14 +48,14 @@ class TagViewSet(
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
-    """Отображение одного тега или списка"""
+    """Вью для отображения одного тега или списка"""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
-    """Рецепты."""
+    """Вью для Рецепта"""
 
     queryset = Recipe.objects.all()
     serializer_class = CreateOrUpdateRecipeSerializer
@@ -155,6 +165,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
 
 class ListOnlyFollowsAPIView(ListAPIView):
+    """Вью для просмотра подписок"""
     serializer_class = FollowCreateSerializer
     permission_classes = [IsAuthenticated, ]
     pagination_class = CustomPagination
@@ -165,7 +176,7 @@ class ListOnlyFollowsAPIView(ListAPIView):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    """Эндпоинт api/users/subscriptions/"""
+    """Вью для подписок"""
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
     permission_classes = (permissions.IsAuthenticated, )

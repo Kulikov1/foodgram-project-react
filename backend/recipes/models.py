@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    """Модель Тэгов"""
+    """Модель Тегов"""
     name = models.CharField(
         max_length=30,
         verbose_name='Название',
@@ -16,8 +16,8 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=150, verbose_name='Ссылка', unique=True)
 
     class Meta:
-        verbose_name = 'Тэг'
-        verbose_name_plural = 'Тэги'
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.name
@@ -68,7 +68,7 @@ class IngredientAmount(models.Model):
 
 
 class Recipe(models.Model):
-    """Модель рецептов."""
+    """Модель рецептов"""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
