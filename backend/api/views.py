@@ -1,9 +1,9 @@
 import csv
 
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets, permissions, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -102,8 +102,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         if request.method == 'POST':
             return self.add_recipe(Favorite, pk=pk)
-        else:
-            return self.remove_recipe(Favorite, pk=pk)
+        return self.remove_recipe(Favorite, pk=pk)
 
     @action(
         detail=True,
@@ -113,8 +112,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, pk=pk)
-        else:
-            return self.remove_recipe(ShoppingCart, pk=pk)
+        return self.remove_recipe(ShoppingCart, pk=pk)
 
     @action(
         detail=False,
@@ -133,22 +131,22 @@ class RecipesViewSet(viewsets.ModelViewSet):
         )
         return self.create_csv_file(ingredients)
 
-    def add_recipe(self, ThroughModel, pk):
+    def add_recipe(self, throughmodel, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        if ThroughModel.objects.filter(recipe=recipe, user=user).exists():
+        if throughmodel.objects.filter(recipe=recipe, user=user).exists():
             return Response(
                 data={'errors': 'Рецепт уже добавлен!'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        ThroughModel.objects.create(recipe=recipe, user=user)
+        throughmodel.objects.create(recipe=recipe, user=user)
         serializer = RecipePartInfoSerializer(recipe)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    def remove_recipe(self, ThroughModel, pk):
+    def remove_recipe(self, throughmodel, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        instance = ThroughModel.objects.filter(
+        instance = throughmodel.objects.filter(
             recipe=recipe,
             user=user
         )

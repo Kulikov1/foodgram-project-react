@@ -3,7 +3,6 @@ from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework.serializers import SerializerMethodField
 from django.contrib.auth import get_user_model
-
 from recipes.models import (
     Ingredient,
     IngredientAmount,
