@@ -5,26 +5,29 @@ from .views import (
     IngredientViewSet,
     TagViewSet,
     RecipesViewSet,
-    FollowView,
-    ListOnlyFollowAPIView
+    FollowViewSet,
+    ListOnlyFollowsAPIView
 )
 
 router = routers.DefaultRouter()
-router.register('ingredients', IngredientViewSet)
 router.register('tags', TagViewSet)
 router.register('recipes', RecipesViewSet)
+router.register('ingredients', IngredientViewSet)
 
 urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path(
-        'users/<int:pk>/subscribe/',
-        FollowView.as_view(),
-        name='users-detail-subscribe'
+        'users/<int:users_id>/subscribe/', FollowViewSet.as_view(
+            {
+                'post': 'create',
+                'delete': 'destroy'
+            }
+        )
     ),
     path(
         'users/subscriptions/',
-        ListOnlyFollowAPIView.as_view(),
-        name='users-subscribtions'
+        ListOnlyFollowsAPIView.as_view(),
+        name='users-follow'
     ),
     path('', include('djoser.urls')),
     path('', include(router.urls)),

@@ -45,5 +45,4 @@ class Follow(models.Model):
             )
 
     def __str__(self):
-        return (f'Подписка {self.user.get_username}',
-                f'на: {self.author.get_username}')
+        return f'{self.user}'
