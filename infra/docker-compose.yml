@@ -32,7 +32,7 @@ services:
   
 
   backend:
-    build: ../backend
+    image: andreister1/foodgram:latest
     restart: always
     expose:
       - 8000
