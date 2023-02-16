@@ -4,7 +4,7 @@ from django.forms import ValidationError
 
 
 class User(AbstractUser):
-    """Модель пользователя"""
+    """Модель пользователя."""
     email = models.EmailField(
         unique=True,
         blank=False,
@@ -22,7 +22,7 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
-    """Модель Подписки"""
+    """Модель Подписки."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

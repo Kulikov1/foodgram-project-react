@@ -1,12 +1,13 @@
 from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 User = get_user_model()
 
 
 class Tag(models.Model):
-    """Модель Тегов"""
+    """Модель Тегов."""
     name = models.CharField(
         max_length=30,
         verbose_name='Название',
@@ -24,7 +25,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Модель ингридиентов"""
+    """Модель ингридиентов."""
     name = models.CharField(
         max_length=150,
         verbose_name='Название ингридиента',
@@ -44,18 +45,28 @@ class Ingredient(models.Model):
 
 
 class IngredientAmount(models.Model):
-    """Модель связи количества ингредиента и рецепта"""
+    """Модель связи количества ингредиента и рецепта."""
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
-        related_name='ingredientamount'
+        related_name='ingredientamount',
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE
     )
     amount = models.PositiveSmallIntegerField(
-        verbose_name='Кол-во'
+        verbose_name='Кол-во',
+        validators=[
+            MinValueValidator(
+                1,
+                message='Количество должно быть положительным.'
+            ),
+            MaxValueValidator(
+                10000,
+                message='Слишком большое количетво ингредиента'
+            ),
+        ],
     )
 
     class Meta:
@@ -68,7 +79,7 @@ class IngredientAmount(models.Model):
 
 
 class Recipe(models.Model):
-    """Модель рецептов"""
+    """Модель рецептов."""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -93,7 +104,17 @@ class Recipe(models.Model):
         verbose_name='Тэги',
     )
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время готовки'
+        verbose_name='Время готовки',
+        validators=[
+            MinValueValidator(
+                1,
+                message='Время готовки не может быть меньше 1.'
+            ),
+            MaxValueValidator(
+                1440,
+                message='Не дольше 24 часов.'
+            ),
+        ],
     )
     created = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -110,7 +131,7 @@ class Recipe(models.Model):
 
 
 class Favorite(models.Model):
-    """Модель избранных рецептов"""
+    """Модель избранных рецептов."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -131,7 +152,7 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    """Модель корзины покупок"""
+    """Модель корзины покупок."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

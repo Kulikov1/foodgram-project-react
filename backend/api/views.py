@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated,)
 from rest_framework.decorators import action
-
 from .serializers import (
     IngredientSerializer,
     CreateOrUpdateRecipeSerializer,
@@ -29,6 +28,7 @@ from recipes.models import (
     IngredientAmount
 )
 from users.models import Follow
+
 from .pagination import CustomPagination
 from .filter import IngredientFilter, TagFilter
 
@@ -36,7 +36,7 @@ User = get_user_model()
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вью для работы с ингредиентами"""
+    """Вью для работы с ингредиентами."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny, ]
@@ -48,14 +48,14 @@ class TagViewSet(
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
-    """Вью для отображения одного тега или списка"""
+    """Вью для отображения одного тега или списка."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
-    """Вью для Рецепта"""
+    """Вью для Рецепта."""
 
     queryset = Recipe.objects.all()
     serializer_class = CreateOrUpdateRecipeSerializer
@@ -163,7 +163,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
 
 class ListOnlyFollowsAPIView(ListAPIView):
-    """Вью для просмотра подписок"""
+    """Вью для просмотра подписок."""
     serializer_class = FollowCreateSerializer
     permission_classes = [IsAuthenticated, ]
     pagination_class = CustomPagination
@@ -174,7 +174,7 @@ class ListOnlyFollowsAPIView(ListAPIView):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    """Вью для подписок"""
+    """Вью для подписок."""
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
     permission_classes = (permissions.IsAuthenticated, )
