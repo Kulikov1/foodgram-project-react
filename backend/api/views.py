@@ -8,7 +8,7 @@ from rest_framework import status, viewsets, permissions, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
-                                        IsAuthenticated,)
+                                        IsAuthenticated, )
 from rest_framework.decorators import action
 from .serializers import (
     IngredientSerializer,
@@ -31,6 +31,7 @@ from users.models import Follow
 
 from .pagination import CustomPagination
 from .filter import IngredientFilter, TagFilter
+from .permissions import AuthorIsRequestUserPermission
 
 User = get_user_model()
 
@@ -59,7 +60,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = CreateOrUpdateRecipeSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (AuthorIsRequestUserPermission, )
     filterset_class = TagFilter
     pagination_class = CustomPagination
 

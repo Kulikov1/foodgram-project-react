@@ -157,27 +157,26 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
     def validate(self, data):
         uniq_tags = []
         uniq_ingredients = []
-
-        if 'tags' not in data:
-            raise serializers.ValidationError(
-                'Добавление тегов обязательно!'
-            )
-        if 'ingredients' not in data:
-            raise serializers.ValidationError(
-                'Добавление ингредиентов обязательно!'
-            )
-
+        print(data)
         for tag in data['tags']:
             if tag.id in uniq_tags:
                 raise serializers.ValidationError(
                     F'Тег {tag} повторяется')
             uniq_tags.append(tag.id)
-        for ingredient in data['ingredients']:
+        for ingredient in data['ingredientamount']:
             ingredient_id = ingredient['id']
             if ingredient_id in uniq_ingredients:
                 raise serializers.ValidationError(
-                    F'Тег {tag} повторяется')
+                    F'Ингредиент {ingredient} повторяется')
             uniq_ingredients.append(ingredient_id)
+        if len(uniq_tags) == 0:
+            raise serializers.ValidationError(
+                'Добавление тегов обязательно!'
+            )
+        if len(uniq_ingredients) == 0:
+            raise serializers.ValidationError(
+                'Добавление ингредиентов обязательно!'
+            )
         return data
 
     @transaction.atomic
